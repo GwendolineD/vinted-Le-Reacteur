@@ -17,6 +17,10 @@ app.use(cors());
 
 mongoose.connect(process.env.MONGO_DB_URI);
 
+app.get("/", (req, res) => {
+  res.json("Welcome to Vinted Le Reacteur !! 😃 ");
+});
+
 const usersRoutes = require("./routes/users");
 app.use(usersRoutes);
 
