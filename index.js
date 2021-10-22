@@ -15,7 +15,7 @@ const app = express();
 app.use(expressFormidable());
 app.use(cors());
 
-mongoose.connect(process.env.MONGO_DB_URI);
+mongoose.connect(process.env.MONGO_DB_URI_LOCAL);
 
 const usersRoutes = require("./routes/users");
 app.use(usersRoutes);

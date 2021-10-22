@@ -54,7 +54,7 @@ router.get("/offers", async (req, res) => {
       res.json({ message: "Désolé, aucun résultat trouvé" });
     }
 
-    if (page >= 2 && page <= maximumPages) {
+    if (page >= 1 && page <= maximumPages) {
       const offers = await Offer.find({
         product_name: new RegExp(req.query.title, "i"),
         product_price: {
