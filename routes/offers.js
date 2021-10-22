@@ -39,42 +39,42 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
 
 router.get("/offers", async (req, res) => {
   try {
-    const numberOfOffersPerPage = 2;
-    const allOffers = await Offer.find({
-      product_name: new RegExp(req.query.title, "i"),
-      product_price: {
-        $gte: Number(req.query.priceMin),
-        $lte: Number(req.query.priceMax),
-      },
-    });
-    const maximumPages = Math.ceil(allOffers.length / numberOfOffersPerPage);
-    const page = Number(req.query.page);
-
-    if (allOffers.length === 0) {
-      res.json({ message: "Désolé, aucun résultat trouvé" });
+    let filter = {};
+    if (req.query.title) {
+      filter.product_name = req.query.title;
+    }
+    if (req.query.priceMin) {
+      filter.product_price = { $gte: req.query.priceMin };
+    }
+    if (req.query.priceMax) {
+      if (req.query.priceMin) {
+        filter.product_price.$lte = req.query.priceMax;
+      } else {
+        filter.product_price = { $lte: req.query.priceMax };
+      }
     }
 
-    if (page >= 1 && page <= maximumPages) {
-      const offers = await Offer.find({
-        product_name: new RegExp(req.query.title, "i"),
-        product_price: {
-          $gte: Number(req.query.priceMin),
-          $lte: Number(req.query.priceMax),
-        },
-      })
-        .select("product_name product_price")
-        .limit(numberOfOffersPerPage)
-        .skip(numberOfOffersPerPage * (page - 1))
-        .sort({ product_price: req.query.sort.split("-")[1] });
-
-      res.json({
-        results: `${allOffers.length} résultat(s) trouvé(s)`,
-        offers,
-        maximumPages,
-      });
-    } else {
-      res.status(400).json({ message: "page not valid" });
+    let sortChoice = { product_price: "asc" };
+    if (req.query.sort === "price_desc") {
+      sortChoice.product_price = "desc";
     }
+
+    let limit = 5;
+    if (req.query.limit) {
+      limit = Number(req.query.limit);
+    }
+
+    let page = 1;
+    if (req.query.page) {
+      page = Number(req.query.page);
+    }
+
+    const result = await Offer.find(filter)
+      .sort(sortChoice)
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .select("product_name product_price");
+    res.json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
