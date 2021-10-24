@@ -4,58 +4,35 @@ const cloudinary = require("cloudinary").v2;
 
 const Offer = require("../models/Offer");
 const isAuthenticated = require("../middleware/isAuthenticated");
+const uploadPictures = require("../middleware/uploadPictures");
 
-router.post("/offer/publish", isAuthenticated, async (req, res) => {
-  try {
-    // let pictureToUpload = req.files.picture.path;
-    // const result = await cloudinary.uploader.upload(
-    //   pictureToUpload,
-    //   { folder: "vinted" },
-    //   function (error, result) {
-    //     console.log(error, result);
-    //   }
-    // );
-
-    const filesKey = Object.keys(req.files);
-    if (filesKey.length === 0) {
-      res.status(400).json({ message: "No file uploaded !" });
+router.post(
+  "/offer/publish",
+  isAuthenticated,
+  uploadPictures,
+  async (req, res) => {
+    try {
+      const newOffer = new Offer({
+        product_name: req.fields.title,
+        product_description: req.fields.description,
+        product_price: req.fields.price,
+        product_details: [
+          { MARQUE: req.fields.brand },
+          { TAILLE: req.fields.size },
+          { ETAT: req.fields.condition },
+          { COULEUR: req.fields.color },
+          { EMPLACEMENT: req.fields.city },
+        ],
+        product_image: req.results,
+        owner: req.user,
+      });
+      await newOffer.save();
+      res.json(newOffer);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
     }
-
-    let results = {};
-    for (let i = 0; i < filesKey.length; i++) {
-      const result = await cloudinary.uploader.upload(
-        req.files[filesKey[i]].path,
-        { folder: "vinted" },
-        function (error, result) {
-          console.log(error, result);
-        }
-      );
-      results[filesKey[i]] = result;
-      if (Object.keys(results).length === filesKey.length) {
-        console.log("done");
-      }
-    }
-
-    const newOffer = new Offer({
-      product_name: req.fields.title,
-      product_description: req.fields.description,
-      product_price: req.fields.price,
-      product_details: [
-        { MARQUE: req.fields.brand },
-        { TAILLE: req.fields.size },
-        { ETAT: req.fields.condition },
-        { COULEUR: req.fields.color },
-        { EMPLACEMENT: req.fields.city },
-      ],
-      product_image: results,
-      owner: req.user,
-    });
-    await newOffer.save();
-    res.json(newOffer);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
   }
-});
+);
 
 router.get("/offers", async (req, res) => {
   try {
