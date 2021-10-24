@@ -7,14 +7,34 @@ const isAuthenticated = require("../middleware/isAuthenticated");
 
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
-    let pictureToUpload = req.files.picture.path;
-    const result = await cloudinary.uploader.upload(
-      pictureToUpload,
-      { folder: "vinted" },
-      function (error, result) {
-        console.log(error, result);
+    // let pictureToUpload = req.files.picture.path;
+    // const result = await cloudinary.uploader.upload(
+    //   pictureToUpload,
+    //   { folder: "vinted" },
+    //   function (error, result) {
+    //     console.log(error, result);
+    //   }
+    // );
+
+    const filesKey = Object.keys(req.files);
+    if (filesKey.length === 0) {
+      res.status(400).json({ message: "No file uploaded !" });
+    }
+
+    let results = {};
+    for (let i = 0; i < filesKey.length; i++) {
+      const result = await cloudinary.uploader.upload(
+        req.files[filesKey[i]].path,
+        { folder: "vinted" },
+        function (error, result) {
+          console.log(error, result);
+        }
+      );
+      results[filesKey[i]] = result;
+      if (Object.keys(results).length === filesKey.length) {
+        console.log("done");
       }
-    );
+    }
 
     const newOffer = new Offer({
       product_name: req.fields.title,
@@ -27,7 +47,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
         { COULEUR: req.fields.color },
         { EMPLACEMENT: req.fields.city },
       ],
-      product_image: result,
+      product_image: results,
       owner: req.user,
     });
     await newOffer.save();
