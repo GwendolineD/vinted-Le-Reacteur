@@ -67,6 +67,10 @@ router.get("/offers", async (req, res) => {
     }
 
     const result = await Offer.find(filter)
+      .populate({
+        path: "owner",
+        select: "account.username account.phone account.avatar",
+      })
       .sort(sortChoice)
       .limit(limit)
       .skip((page - 1) * limit);
