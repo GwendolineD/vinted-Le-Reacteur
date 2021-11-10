@@ -38,7 +38,7 @@ router.get("/offers", async (req, res) => {
   try {
     let filter = {};
     if (req.query.title) {
-      filter.product_name = req.query.title;
+      filter.product_name = new RegExp(req.query.title, "i");
     }
     if (req.query.priceMin) {
       filter.product_price = { $gte: req.query.priceMin };
@@ -56,7 +56,7 @@ router.get("/offers", async (req, res) => {
       sortChoice.product_price = "desc";
     }
 
-    let limit = 5;
+    let limit = 20;
     if (req.query.limit) {
       limit = Number(req.query.limit);
     }
@@ -70,7 +70,9 @@ router.get("/offers", async (req, res) => {
       .sort(sortChoice)
       .limit(limit)
       .skip((page - 1) * limit)
-      .select("product_name product_price");
+      .select(
+        "product_name product_price product_description product_price product_details product_image owner"
+      );
     res.json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -79,7 +81,10 @@ router.get("/offers", async (req, res) => {
 
 router.get("/offer/:id", async (req, res) => {
   try {
-    const offerById = await Offer.findById(req.params.id);
+    const offerById = await Offer.findById(req.params.id).populate({
+      path: "owner",
+      select: "account.username account.phone account.avatar",
+    });
     res.json(offerById);
   } catch (error) {
     res.status(400).json({ message: error.message });
