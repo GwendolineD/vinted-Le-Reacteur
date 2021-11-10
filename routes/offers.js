@@ -69,10 +69,10 @@ router.get("/offers", async (req, res) => {
     const result = await Offer.find(filter)
       .sort(sortChoice)
       .limit(limit)
-      .skip((page - 1) * limit)
-      .select(
-        "product_name product_price product_description product_price product_details product_image owner"
-      );
+      .skip((page - 1) * limit);
+    // .select(
+    //   "product_name product_price product_description product_price product_details product_image owner"
+    // );
     res.json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
