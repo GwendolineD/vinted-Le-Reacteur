@@ -21,24 +21,24 @@ router.post("/user/signup", async (req, res) => {
       const hash = SHA256(password + salt).toString(encBase64);
       const token = uid2(16);
 
-      let pictureToUpload = req.files.picture.path;
+      // let pictureToUpload = req.files.picture.path;
 
-      if (req.files.picture.path) {
-        const result = await cloudinary.uploader.upload(
-          pictureToUpload,
-          { folder: "vinted" },
-          function (error, result) {
-            console.log(error, result);
-          }
-        );
-      }
+      // if (req.files.picture.path) {
+      //   const result = await cloudinary.uploader.upload(
+      //     pictureToUpload,
+      //     { folder: "vinted" },
+      //     function (error, result) {
+      //       console.log(error, result);
+      //     }
+      //   );
+      // }
 
       const newUser = new User({
         email: req.fields.email,
         account: {
           username: req.fields.username,
           phone: req.fields.phone,
-          avatar: result,
+          // avatar: result,
         },
         token: token,
         hash: hash,
@@ -49,10 +49,11 @@ router.post("/user/signup", async (req, res) => {
       res.status(200).json({
         _id: newUser._id,
         token: newUser.token,
-        account: {
-          username: newUser.account.username,
-          phone: newUser.account.phone,
-        }, // OU account : newUser.account
+        // account: {
+        //   username: newUser.account.username,
+        //   phone: newUser.account.phone,
+        // },
+        account: newUser.account,
       });
     }
   } catch (error) {
