@@ -38,7 +38,7 @@ router.post("/user/signup", async (req, res) => {
         account: {
           username: req.fields.username,
           phone: req.fields.phone,
-          avatar: result,
+          avatar: result ? result : "",
         },
         token: token,
         hash: hash,
