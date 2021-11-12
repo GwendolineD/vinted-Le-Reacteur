@@ -23,13 +23,15 @@ router.post("/user/signup", async (req, res) => {
 
       let pictureToUpload = req.files.picture.path;
 
-      const result = await cloudinary.uploader.upload(
-        pictureToUpload,
-        { folder: "vinted" },
-        function (error, result) {
-          console.log(error, result);
-        }
-      );
+      if (pictureToUpload) {
+        const result = await cloudinary.uploader.upload(
+          pictureToUpload,
+          { folder: "vinted" },
+          function (error, result) {
+            console.log(error, result);
+          }
+        );
+      }
 
       const newUser = new User({
         email: req.fields.email,
@@ -57,6 +59,7 @@ router.post("/user/signup", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+
 router.post("/user/login", async (req, res) => {
   try {
     const doesEmailExist = await User.findOne({ email: req.fields.email });
