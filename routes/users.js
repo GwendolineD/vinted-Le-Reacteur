@@ -21,9 +21,19 @@ router.post("/user/signup", async (req, res) => {
       const hash = SHA256(password + salt).toString(encBase64);
       const token = uid2(16);
 
+      const newUser = new User({
+        email: req.fields.email,
+        account: {
+          username: req.fields.username,
+          phone: req.fields.phone,
+        },
+        token: token,
+        hash: hash,
+        salt: salt,
+      });
+
       if (req.files.picture) {
         let pictureToUpload = req.files.picture.path;
-
         const result = await cloudinary.uploader.upload(
           pictureToUpload,
           { folder: "vinted" },
@@ -31,19 +41,8 @@ router.post("/user/signup", async (req, res) => {
             console.log(error, result);
           }
         );
+        newUser.account.avatar = result;
       }
-
-      const newUser = new User({
-        email: req.fields.email,
-        account: {
-          username: req.fields.username,
-          phone: req.fields.phone,
-          avatar: result ? result : "",
-        },
-        token: token,
-        hash: hash,
-        salt: salt,
-      });
       await newUser.save();
       // console.log(result);
       res.status(200).json({
