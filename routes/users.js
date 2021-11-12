@@ -45,7 +45,7 @@ router.post("/user/signup", async (req, res) => {
         salt: salt,
       });
       await newUser.save();
-      console.log(result);
+      // console.log(result);
       res.status(200).json({
         _id: newUser._id,
         token: newUser.token,
