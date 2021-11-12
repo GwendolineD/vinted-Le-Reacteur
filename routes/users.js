@@ -21,24 +21,24 @@ router.post("/user/signup", async (req, res) => {
       const hash = SHA256(password + salt).toString(encBase64);
       const token = uid2(16);
 
-      if (req.files) {
-        let pictureToUpload = req.files.picture.path;
+      // if (req.files) {
+      let pictureToUpload = req.files.picture.path;
 
-        const result = await cloudinary.uploader.upload(
-          pictureToUpload,
-          { folder: "vinted" },
-          function (error, result) {
-            console.log(error, result);
-          }
-        );
-      }
+      const result = await cloudinary.uploader.upload(
+        pictureToUpload,
+        { folder: "vinted" },
+        function (error, result) {
+          console.log(error, result);
+        }
+      );
+      // }
 
       const newUser = new User({
         email: req.fields.email,
         account: {
           username: req.fields.username,
           phone: req.fields.phone,
-          avatar: result,
+          avatar: result ? result : "",
         },
         token: token,
         hash: hash,
