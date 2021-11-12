@@ -23,7 +23,7 @@ router.post("/user/signup", async (req, res) => {
 
       let pictureToUpload = req.files.picture.path;
 
-      if (pictureToUpload) {
+      if (req.files.picture.path) {
         const result = await cloudinary.uploader.upload(
           pictureToUpload,
           { folder: "vinted" },
