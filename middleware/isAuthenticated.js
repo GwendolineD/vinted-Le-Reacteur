@@ -7,6 +7,7 @@ const isAuthenticated = async (req, res, next) => {
     const doesTokenExist = await User.findOne({
       token: token.replace("Bearer ", ""),
     });
+    console.log(doesTokenExist);
     if (doesTokenExist) {
       req.user = doesTokenExist;
       next();
