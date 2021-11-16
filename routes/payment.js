@@ -13,7 +13,7 @@ router.post("/payment", async (req, res) => {
       source: stripeToken,
     });
 
-    // console.log(stripeResponse);
+    console.log(stripeResponse);
 
     res.json(stripeResponse);
   } catch (error) {
