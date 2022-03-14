@@ -1,14 +1,16 @@
 const express = require("express");
 const router = express.Router();
+
 const uid2 = require("uid2");
 const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
-
 const cloudinary = require("cloudinary").v2;
 
 const User = require("../models/User");
 
 router.post("/user/signup", async (req, res) => {
+  console.log("route Sign Up");
+
   try {
     const doesEmailExist = await User.findOne({ email: req.fields.email });
     if (doesEmailExist) {
@@ -32,6 +34,7 @@ router.post("/user/signup", async (req, res) => {
         salt: salt,
       });
 
+      // Add picture
       if (req.files.picture) {
         let pictureToUpload = req.files.picture.path;
         const result = await cloudinary.uploader.upload(
@@ -43,16 +46,13 @@ router.post("/user/signup", async (req, res) => {
         );
         newUser.account.avatar = result;
       }
+
       await newUser.save();
-      // console.log(result);
+
       res.status(200).json({
         _id: newUser._id,
         token: newUser.token,
         account: newUser.account,
-        // account: {
-        //   username: newUser.account.username,
-        //   phone: newUser.account.phone,
-        // },
       });
     }
   } catch (error) {
@@ -61,12 +61,13 @@ router.post("/user/signup", async (req, res) => {
 });
 
 router.post("/user/login", async (req, res) => {
+  console.log("route Log In");
+
   try {
     const doesEmailExist = await User.findOne({ email: req.fields.email });
     if (!doesEmailExist) {
       res.status(400).json({ message: "Email or password not valid" });
     } else {
-      //   const userSalt = await doesEmailExist.salt;
       const userHash = await doesEmailExist.hash;
       const password = req.fields.password;
       const hash = SHA256(password + (await doesEmailExist.salt)).toString(
@@ -79,7 +80,7 @@ router.post("/user/login", async (req, res) => {
           account: doesEmailExist.account,
         });
       } else {
-        res.status(400).json({ message: "Email or password not valid" }); // être le plus implicite possible pour ne pas donner trop d'infos à un utilisateur malveillant
+        res.status(400).json({ message: "Email or password not valid" });
       }
     }
   } catch (error) {

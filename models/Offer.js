@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const router = require("../routes/offers");
 
 const Offer = mongoose.model("Offer", {
   product_name: { type: String, maxlength: 50 },

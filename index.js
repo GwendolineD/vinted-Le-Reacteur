@@ -15,7 +15,7 @@ const app = express();
 app.use(expressFormidable());
 app.use(cors());
 
-mongoose.connect(process.env.MONGO_DB_URI);
+mongoose.connect(process.env.MONGO_DB_URI_LOCAL);
 
 app.get("/", (req, res) => {
   res.json("Welcome to Vinted Le Reacteur !! 😃 🚀 ");

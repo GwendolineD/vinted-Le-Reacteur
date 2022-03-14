@@ -3,9 +3,11 @@ const router = express.Router();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 router.post("/payment", async (req, res) => {
+  console.log("route Payment");
+
   try {
     const stripeToken = req.fields.stripeToken;
-    // console.log(req.fields.amount);
+
     const stripeResponse = await stripe.charges.create({
       amount: req.fields.amount,
       currency: "eur",
@@ -13,7 +15,7 @@ router.post("/payment", async (req, res) => {
       source: stripeToken,
     });
 
-    console.log(stripeResponse);
+    // console.log(stripeResponse);
 
     res.json(stripeResponse);
   } catch (error) {

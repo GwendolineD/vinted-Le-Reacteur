@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const cloudinary = require("cloudinary").v2;
 
 const Offer = require("../models/Offer");
 const isAuthenticated = require("../middleware/isAuthenticated");
@@ -11,6 +10,8 @@ router.post(
   isAuthenticated,
   uploadPictures,
   async (req, res) => {
+    console.log("route Publish");
+
     try {
       const newOffer = new Offer({
         product_name: req.fields.title,
@@ -26,7 +27,9 @@ router.post(
         product_image: req.results,
         owner: req.user,
       });
+
       await newOffer.save();
+
       res.json(newOffer);
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -35,6 +38,8 @@ router.post(
 );
 
 router.get("/offers", async (req, res) => {
+  console.log("route Offers");
+
   try {
     let filter = {};
     if (req.query.title) {
@@ -74,9 +79,7 @@ router.get("/offers", async (req, res) => {
       .sort(sortChoice)
       .limit(limit)
       .skip((page - 1) * limit);
-    // .select(
-    //   "product_name product_price product_description product_price product_details product_image owner"
-    // );
+
     res.json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -84,15 +87,37 @@ router.get("/offers", async (req, res) => {
 });
 
 router.get("/offer/:id", async (req, res) => {
+  console.log("route Offer");
+
   try {
     const offerById = await Offer.findById(req.params.id).populate({
       path: "owner",
       select: "account.username account.phone account.avatar",
     });
+
     res.json(offerById);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
+
+//test delete pict by publi._id
+// router.get("/deletepict", async (req, res) => {
+//   console.log("route delete pict");
+
+//   try {
+//     const resultDeletePicture = await cloudinary.api.delete_resources(
+//       "vinted/xxfakesg8zcdl4t8pdus",
+//       function (error, result) {
+//         console.log(result, error, "<<<<<<error");
+//       }
+//     );
+
+//     console.log(resultDeletePicture, "<<<<<resultDeletePicture");
+//     res.json("deleted");
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// });
 
 module.exports = router;

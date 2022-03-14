@@ -10,7 +10,7 @@ const uploadPictures = async (req, res, next) => {
   for (let i = 0; i < filesKey.length; i++) {
     const result = await cloudinary.uploader.upload(
       req.files[filesKey[i]].path,
-      { folder: "vinted" },
+      { folder: "dhcv2" },
       function (error, result) {
         console.log(error, result);
       }
