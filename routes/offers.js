@@ -12,27 +12,43 @@ router.post(
   async (req, res) => {
     console.log("route Publish");
 
-    try {
-      const newOffer = new Offer({
-        product_name: req.fields.title,
-        product_description: req.fields.description,
-        product_price: req.fields.price,
-        product_details: [
-          { MARQUE: req.fields.brand },
-          { TAILLE: req.fields.size },
-          { ETAT: req.fields.condition },
-          { COULEUR: req.fields.color },
-          { EMPLACEMENT: req.fields.city },
-        ],
-        product_image: req.results,
-        owner: req.user,
-      });
+    const { title, description, price, brand, size, condition, color, city } =
+      req.fields;
 
-      await newOffer.save();
+    if (
+      title &&
+      description &&
+      price &&
+      brand &&
+      size &&
+      condition &&
+      color &&
+      city
+    ) {
+      try {
+        const newOffer = new Offer({
+          product_name: title,
+          product_description: description,
+          product_price: price,
+          product_details: [
+            { MARQUE: brand },
+            { TAILLE: size },
+            { ETAT: condition },
+            { COULEUR: color },
+            { EMPLACEMENT: city },
+          ],
+          product_image: req.results,
+          owner: req.user,
+        });
 
-      res.json(newOffer);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
+        await newOffer.save();
+
+        res.status(200).json(newOffer);
+      } catch (error) {
+        res.status(400).json({ message: error.message });
+      }
+    } else {
+      res.status(406).json({ message: "Veuillez remplir tous les champs." });
     }
   }
 );
@@ -80,7 +96,7 @@ router.get("/offers", async (req, res) => {
       .limit(limit)
       .skip((page - 1) * limit);
 
-    res.json(result);
+    res.status(200).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -95,7 +111,7 @@ router.get("/offer/:id", async (req, res) => {
       select: "account.username account.phone account.avatar",
     });
 
-    res.json(offerById);
+    res.status(200).json(offerById);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

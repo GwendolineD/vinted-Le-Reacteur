@@ -17,7 +17,7 @@ router.post("/payment", async (req, res) => {
 
     // console.log(stripeResponse);
 
-    res.json(stripeResponse);
+    res.status(200).json(stripeResponse);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
