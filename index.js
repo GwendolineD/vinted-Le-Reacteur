@@ -15,7 +15,7 @@ const app = express();
 app.use(expressFormidable());
 app.use(cors());
 
-mongoose.connect(process.env.MONGO_DB_URI_LOCAL);
+mongoose.connect(process.env.MONGO_DB_URI || "mongodb://localhost/vinted");
 
 app.get("/", (req, res) => {
   res.json("Welcome to Vinted Le Reacteur !! 😃 🚀 ");
@@ -34,6 +34,6 @@ app.all("*", (req, res) => {
   res.status(400).json({ message: "route not found" });
 });
 
-app.listen(process.env.PORT, () => {
-  console.log("Server has started !");
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Server has started ! 🤓");
 });
