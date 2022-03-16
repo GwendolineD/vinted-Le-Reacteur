@@ -14,9 +14,9 @@ router.post("/user/signup", async (req, res) => {
   try {
     const doesEmailExist = await User.findOne({ email: req.fields.email });
     if (doesEmailExist) {
-      res.status(400).json({ message: "email already exist" });
+      res.status(409).json({ message: "email already exist" });
     } else if (!req.fields.username) {
-      res.status(400).json({ message: "please enter a username" });
+      res.status(406).json({ message: "please enter a username" });
     } else {
       const password = req.fields.password;
       const salt = uid2(16);
@@ -66,7 +66,7 @@ router.post("/user/login", async (req, res) => {
   try {
     const doesEmailExist = await User.findOne({ email: req.fields.email });
     if (!doesEmailExist) {
-      res.status(400).json({ message: "Email or password not valid" });
+      res.status(401).json({ message: "Email or password not valid" });
     } else {
       const userHash = await doesEmailExist.hash;
       const password = req.fields.password;
@@ -80,7 +80,7 @@ router.post("/user/login", async (req, res) => {
           account: doesEmailExist.account,
         });
       } else {
-        res.status(400).json({ message: "Email or password not valid" });
+        res.status(401).json({ message: "Email or password not valid" });
       }
     }
   } catch (error) {
