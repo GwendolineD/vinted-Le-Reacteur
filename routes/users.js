@@ -11,23 +11,27 @@ const User = require("../models/User");
 router.post("/user/signup", async (req, res) => {
   console.log("route Sign Up");
 
+  const { email, username, password, phone } = req.fields;
+
   try {
-    const doesEmailExist = await User.findOne({ email: req.fields.email });
+    const doesEmailExist = await User.findOne({ email: email });
     if (doesEmailExist) {
-      res.status(409).json({ message: "email already exist" });
-    } else if (!req.fields.username) {
-      res.status(406).json({ message: "please enter a username" });
+      res.status(409).json({ message: "Cet email a déjà un compte" });
+    } else if (!username || !password) {
+      res.status(406).json({
+        message: "Veuillez remplir tous les champs (photo facultative).",
+      });
     } else {
-      const password = req.fields.password;
+      // const password = req.fields.password;
       const salt = uid2(16);
       const hash = SHA256(password + salt).toString(encBase64);
       const token = uid2(16);
 
       const newUser = new User({
-        email: req.fields.email,
+        email: email,
         account: {
-          username: req.fields.username,
-          phone: req.fields.phone,
+          username: username,
+          phone: phone,
         },
         token: token,
         hash: hash,
@@ -35,7 +39,7 @@ router.post("/user/signup", async (req, res) => {
       });
 
       // Add picture
-      if (req.files.picture) {
+      if (req.files?.picture) {
         let pictureToUpload = req.files.picture.path;
         const result = await cloudinary.uploader.upload(
           pictureToUpload,
@@ -66,7 +70,7 @@ router.post("/user/login", async (req, res) => {
   try {
     const doesEmailExist = await User.findOne({ email: req.fields.email });
     if (!doesEmailExist) {
-      res.status(401).json({ message: "Email or password not valid" });
+      res.status(401).json({ message: "Email ou mot de passe non valide" });
     } else {
       const userHash = await doesEmailExist.hash;
       const password = req.fields.password;
