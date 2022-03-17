@@ -18,7 +18,7 @@ app.use(cors());
 mongoose.connect(process.env.MONGO_DB_URI || "mongodb://localhost/vinted");
 
 app.get("/", (req, res) => {
-  res.json("Welcome to Vinted Le Reacteur !! 😃 🚀 ");
+  res.json("Welcome to Gwendoline's Vinted !! 😃 🚀 ");
 });
 
 const usersRoutes = require("./routes/users");

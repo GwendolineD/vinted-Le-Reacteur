@@ -21,8 +21,15 @@ router.post("/user/signup", async (req, res) => {
       res.status(406).json({
         message: "Veuillez remplir tous les champs (photo facultative).",
       });
+    } else if (phone.length !== 10 || phone[0] !== "0") {
+      res.status(406).json({
+        message: "Téléphone non valide.",
+      });
+    } else if (!email.includes("@")) {
+      res.status(406).json({
+        message: "Email non valide.",
+      });
     } else {
-      // const password = req.fields.password;
       const salt = uid2(16);
       const hash = SHA256(password + salt).toString(encBase64);
       const token = uid2(16);
