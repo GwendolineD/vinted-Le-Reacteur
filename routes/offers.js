@@ -90,7 +90,7 @@ router.get("/offers", async (req, res) => {
     const result = await Offer.find(filter)
       .populate({
         path: "owner",
-        select: "account.username account.phone account.avatar",
+        select: "account",
       })
       .sort(sortChoice)
       .limit(limit)
@@ -108,7 +108,7 @@ router.get("/offer/:id", async (req, res) => {
   try {
     const offerById = await Offer.findById(req.params.id).populate({
       path: "owner",
-      select: "account.username account.phone account.avatar",
+      select: "account",
     });
 
     res.status(200).json(offerById);
