@@ -117,23 +117,6 @@ router.get("/offer/:id", async (req, res) => {
   }
 });
 
-//test delete pict by publi._id
-// router.get("/deletepict", async (req, res) => {
-//   console.log("route delete pict");
 
-//   try {
-//     const resultDeletePicture = await cloudinary.api.delete_resources(
-//       "vinted/xxfakesg8zcdl4t8pdus",
-//       function (error, result) {
-//         console.log(result, error, "<<<<<<error");
-//       }
-//     );
-
-//     console.log(resultDeletePicture, "<<<<<resultDeletePicture");
-//     res.json("deleted");
-//   } catch (error) {
-//     res.status(400).json({ message: error.message });
-//   }
-// });
 
 module.exports = router;
